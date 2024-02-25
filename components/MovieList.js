@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { fallbackMoviePoster, image185 } from "../api/movieDB";
 import { style } from "../theme/";
 
 const { width, height } = Dimensions.get("window");
@@ -42,12 +43,14 @@ const MovieList = ({ title, data, hideSeeAll }) => {
               <Image
                 className="rounded-3xl"
                 style={{ width: width * 0.33, height: height * 0.22 }}
-                source={require("../assets/moviePoster.png")}
+                source={{
+                  uri: image185(item.poster_path) || fallbackMoviePoster,
+                }}
               />
               <Text className="text-neutral-300 ml-1">
-                {movieName.length > 14
-                  ? movieName.slice(0, 14) + "..."
-                  : { movieName }}
+                {item?.title?.length > 14
+                  ? item?.title?.slice(0, 14) + "..."
+                  : item?.title}
               </Text>
             </View>
           </TouchableWithoutFeedback>

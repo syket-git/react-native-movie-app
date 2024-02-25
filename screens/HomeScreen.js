@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Platform,
   ScrollView,
@@ -13,6 +13,11 @@ import {
   MagnifyingGlassIcon,
 } from "react-native-heroicons/outline";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  fetchTopRatedMovies,
+  fetchTrendingMovies,
+  fetchUpcomingMovies,
+} from "../api/movieDB";
 import Loading from "../components/Loading";
 import MovieList from "../components/MovieList";
 import TrendingMovies from "../components/TrendingMovies";
@@ -23,10 +28,47 @@ const ios = Platform.OS === "ios";
 const HomeScreen = () => {
   const navigation = useNavigation();
 
-  const [trending, setTrending] = useState([1, 2, 3]);
-  const [upcoming, setUpcoming] = useState([1, 2, 3]);
-  const [topRated, setTopRated] = useState([1, 2, 3]);
-  const [loading, setLoading] = useState(false);
+  const [trending, setTrending] = useState([]);
+  const [upcoming, setUpcoming] = useState([]);
+  const [topRated, setTopRated] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getTrendingMovies();
+    getUpcomingMovies();
+    getTopRatedMovies();
+  }, []);
+
+  const getTrendingMovies = async () => {
+    const data = await fetchTrendingMovies();
+    if (data && data.results.length) {
+      setTrending(data.results);
+      setLoading(false);
+    } else {
+      setTrending([]);
+      setLoading(false);
+    }
+  };
+  const getTopRatedMovies = async () => {
+    const data = await fetchTopRatedMovies();
+    if (data && data.results.length) {
+      setTopRated(data.results);
+      setLoading(false);
+    } else {
+      setTopRated([]);
+      setLoading(false);
+    }
+  };
+  const getUpcomingMovies = async () => {
+    const data = await fetchUpcomingMovies();
+    if (data && data.results.length) {
+      setUpcoming(data.results);
+      setLoading(false);
+    } else {
+      setUpcoming([]);
+      setLoading(false);
+    }
+  };
 
   return (
     <View className="flex-1 bg-neutral-800">

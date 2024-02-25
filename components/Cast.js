@@ -1,7 +1,6 @@
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { fallbackMoviePoster, image185 } from "../api/movieDB";
 const Cast = ({ cast, navigation }) => {
-  let personName = "Keanu Reevs";
-  let characterName = "Jhon Vick";
   return (
     <View className="my-6">
       <Text className="text-white text-lg mx-4 mb-5">Top Cast</Text>
@@ -19,14 +18,16 @@ const Cast = ({ cast, navigation }) => {
             >
               <View className="overflow-hidden rounded-full h-20 w-20 items-center border border-neutral-500">
                 <Image
-                  source={require("../assets/moviePoster.png")}
+                  source={{
+                    uri: image185(person.profile_path) || fallbackMoviePoster,
+                  }}
                   className="rounded-2xl h-24 w-20"
                 />
               </View>
               <Text className="text-white text-xs mt-1">
-                {characterName?.length > 10
-                  ? characterName.slice(0, 10) + "..."
-                  : characterName}
+                {person?.original_name?.length > 10
+                  ? person?.original_name.slice(0, 10) + "..."
+                  : person?.original_name}
               </Text>
             </TouchableOpacity>
           ))}
