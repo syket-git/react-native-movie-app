@@ -12,7 +12,7 @@ import { style } from "../theme/";
 
 const { width, height } = Dimensions.get("window");
 
-const MovieList = ({ title, data }) => {
+const MovieList = ({ title, data, hideSeeAll }) => {
   const navigation = useNavigation();
   const movieName = "Ant-Man and Waspi: Quantumania";
 
@@ -20,11 +20,13 @@ const MovieList = ({ title, data }) => {
     <View className="mb-8 space-y-4">
       <View className="mx-4 flex-row justify-between item-center">
         <Text className="text-white text-xl">{title}</Text>
-        <TouchableOpacity>
-          <Text className="text-lg" style={style.text}>
-            See All
-          </Text>
-        </TouchableOpacity>
+        {!hideSeeAll && (
+          <TouchableOpacity>
+            <Text className="text-lg" style={style.text}>
+              See All
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
       <ScrollView
         horizontal
