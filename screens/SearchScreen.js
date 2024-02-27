@@ -1,5 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { debounce } from "lodash";
+import { useCallback, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -12,19 +13,48 @@ import {
 } from "react-native";
 import { XMarkIcon } from "react-native-heroicons/outline";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  fallbackMoviePoster,
+  fetchSearchMovies,
+  image185,
+} from "../api/movieDB";
 import Loading from "../components/Loading";
 
 const { width, height } = Dimensions.get("window");
 
 const SearchScreen = () => {
-  const [results, setResults] = useState([1, 2, 3, 4, 5, 6]);
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const movieName = "Ant-Man and Waspi: Quantumania";
+
+  const handleSearch = async (value) => {
+    if (value && value.length > 2) {
+      setLoading(true);
+      await fetchSearchMovies({
+        query: value,
+        include_adult: "false",
+        language: "en-US",
+        page: "1",
+      }).then((data) => {
+        setLoading(false);
+        if (data && data.results) {
+          setResults(data.results);
+        }
+      });
+    } else {
+      setLoading(false);
+      setResults([]);
+    }
+  };
+
+  const handleTextDebounce = useCallback(debounce(handleSearch, 400), []);
+
   return (
     <SafeAreaView className={` bg-neutral-800 flex-1`}>
       <View className="mx-4 mt-3 flex-row justify-between items-center border border-neutral-500 rounded-full">
         <TextInput
+          onChangeText={handleTextDebounce}
           placeholder="Search Movie"
           placeholderTextColor="lightgray"
           className="pb-1 pl-6 flex-1 font-semibold text-white tracking-wider"
@@ -54,13 +84,15 @@ const SearchScreen = () => {
               >
                 <View className="space-y-2 mb-4">
                   <Image
-                    source={require("../assets/moviePoster.png")}
+                    source={{
+                      uri: image185(item?.poster_path) || fallbackMoviePoster,
+                    }}
                     style={{ width: width * 0.44, height: height * 0.3 }}
                   />
                   <Text className="text-neutral-300 ml-1">
-                    {movieName?.length > 22
-                      ? movieName.slice(0, 22) + "..."
-                      : movieName}
+                    {item?.title?.length > 22
+                      ? item?.title?.slice(0, 22) + "..."
+                      : item?.title}
                   </Text>
                 </View>
               </TouchableWithoutFeedback>
